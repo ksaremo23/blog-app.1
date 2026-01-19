@@ -1,0 +1,134 @@
+.view-blog-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.view-blog-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.blog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.back-link {
+  color: #646cff;
+  font-weight: 500;
+}
+
+.back-link:hover {
+  color: #535bf2;
+}
+
+.blog-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.edit-button {
+  background-color: #646cff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.edit-button:hover {
+  background-color: #535bf2;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.delete-button:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.blog-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #213547;
+}
+
+.blog-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.blog-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.blog-content {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #fcc;
+}
+
+.delete-confirm {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+}
+
+.delete-confirm p {
+  margin-bottom: 1rem;
+  color: #856404;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.delete-confirm-actions .cancel-button {
+  background-color: #f9f9f9;
+  color: #213547;
+  border: 1px solid #ddd;
+}
+
+.delete-confirm-actions .cancel-button:hover {
+  background-color: #f0f0f0;
+}

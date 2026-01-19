@@ -1,0 +1,45 @@
+.home-container {
+  width: 100%;
+}
+
+.home-header {
+  margin-bottom: 2rem;
+}
+
+.home-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #213547;
+}
+
+.blog-count {
+  color: #666;
+  font-size: 1rem;
+}
+
+.blogs-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.no-blogs {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #fcc;
+}
