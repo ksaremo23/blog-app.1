@@ -11,6 +11,7 @@ export interface Blog {
   title: string;
   content: string;
   user_id: string;
+  image_url?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -18,6 +19,22 @@ export interface Blog {
 export interface BlogFormData {
   title: string;
   content: string;
+  image_url?: string | null;
+}
+
+// Comment Types
+export interface Comment {
+  id: string;
+  blog_id: string;
+  user_id: string;
+  content: string;
+  image_url?: string | null;
+  created_at: string;
+}
+
+export interface CommentFormData {
+  content: string;
+  image_url?: string | null;
 }
 
 // Auth State Types

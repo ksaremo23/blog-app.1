@@ -44,15 +44,18 @@ export const createBlog = async (blogData: BlogFormData): Promise<Blog> => {
 
   if (!user) throw new Error('Not authenticated');
 
+  const row: Record<string, unknown> = {
+    title: blogData.title,
+    content: blogData.content,
+    user_id: user.id,
+  };
+  if (blogData.image_url != null && blogData.image_url !== '') {
+    row.image_url = blogData.image_url;
+  }
+
   const { data, error } = await supabase
     .from('blogs')
-    .insert([
-      {
-        title: blogData.title,
-        content: blogData.content,
-        user_id: user.id,
-      },
-    ])
+    .insert([row])
     .select()
     .single();
 
@@ -70,6 +73,7 @@ export const updateBlog = async (
     .update({
       title: blogData.title,
       content: blogData.content,
+      image_url: blogData.image_url ?? null,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)

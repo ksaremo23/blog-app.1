@@ -111,3 +111,39 @@
   margin-bottom: 1rem;
   border: 1px solid #fcc;
 }
+
+.form-file {
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.image-preview-wrap {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.remove-image-btn {
+  background: none;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.remove-image-btn:hover {
+  background-color: #dc3545;
+  color: white;
+}

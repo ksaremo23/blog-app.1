@@ -3,12 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { AppDispatch, RootState } from '../store/store';
 import { fetchBlogById, editBlog, clearCurrentBlog } from '../store/slices/blogSlice';
+import { uploadBlogImage } from '../services/storageService';
 import Layout from '../components/Layout';
 import './UpdateBlog.css';
 
 const UpdateBlog = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { id } = useParams<{ id: string }>();
   const { currentBlog, isLoading, error } = useSelector(
     (state: RootState) => state.blog
@@ -18,6 +20,9 @@ const UpdateBlog = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [validationError, setValidationError] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [removeCurrentImage, setRemoveCurrentImage] = useState(false);
   const initializedRef = useRef(false);
 
   useEffect(() => {
@@ -37,19 +42,35 @@ const UpdateBlog = () => {
 
   useEffect(() => {
     if (currentBlog && user && !initializedRef.current) {
-      // Check if user is the owner
       if (user.id !== currentBlog.user_id) {
         navigate('/');
         return;
       }
-      // Initialize form fields when blog data is first loaded
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle(currentBlog.title);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setContent(currentBlog.content);
+      if (currentBlog.image_url) setImagePreview(currentBlog.image_url);
       initializedRef.current = true;
     }
   }, [currentBlog, user, navigate]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      setImageFile(file);
+      setRemoveCurrentImage(false);
+      if (imagePreview && !imagePreview.startsWith('http')) URL.revokeObjectURL(imagePreview);
+      setImagePreview(URL.createObjectURL(file));
+    }
+    e.target.value = '';
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setRemoveCurrentImage(true);
+    if (imagePreview && imagePreview.startsWith('blob:')) URL.revokeObjectURL(imagePreview);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,8 +89,19 @@ const UpdateBlog = () => {
     if (!id) return;
 
     try {
+      let image_url: string | null = null;
+      if (imageFile) {
+        image_url = await uploadBlogImage(imageFile);
+      } else if (removeCurrentImage) {
+        image_url = null;
+      } else if (currentBlog?.image_url) {
+        image_url = currentBlog.image_url;
+      }
       await dispatch(
-        editBlog({ id, blogData: { title: title.trim(), content: content.trim() } })
+        editBlog({
+          id,
+          blogData: { title: title.trim(), content: content.trim(), image_url },
+        })
       ).unwrap();
       navigate(`/blog/${id}`);
     } catch {
@@ -128,6 +160,32 @@ const UpdateBlog = () => {
                 rows={15}
                 disabled={isLoading}
               />
+            </div>
+            <div className="form-group">
+              <label>Post image (optional)</label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="form-file"
+              />
+              {(imagePreview || (currentBlog?.image_url && !removeCurrentImage)) && (
+                <div className="image-preview-wrap">
+                  <img
+                    src={imagePreview || currentBlog?.image_url || ''}
+                    alt="Preview"
+                    className="image-preview"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="remove-image-btn"
+                  >
+                    Remove image
+                  </button>
+                </div>
+              )}
             </div>
             {(error || validationError) && (
               <div className="error-message">

@@ -23,6 +23,11 @@ const BlogCard = ({ blog }: BlogCardProps) => {
   return (
     <div className="blog-card">
       <Link to={`/blog/${blog.id}`} className="blog-card-link">
+        {blog.image_url && (
+          <div className="blog-card-image-wrap">
+            <img src={blog.image_url} alt="" className="blog-card-image" />
+          </div>
+        )}
         <h2 className="blog-card-title">{blog.title}</h2>
         <p className="blog-card-content">{truncateContent(blog.content)}</p>
         <div className="blog-card-footer">

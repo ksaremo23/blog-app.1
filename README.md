@@ -6,6 +6,9 @@ A clean and simple blog application built with React 19, TypeScript, Redux Toolk
 
 - User Authentication (Register, Login, Logout)
 - Blog CRUD Operations (Create, Read, Update, Delete)
+- **Post images**: Add or remove an image when creating or editing a post
+- **View page**: Click any post on the home list to open its full view
+- **Comments with images**: Comment on posts (login required); comments can include an optional image
 - Blog Listing with Pagination
 - Responsive Design
 - TypeScript for type safety
@@ -62,6 +65,41 @@ CREATE POLICY "Users can update their own blogs" ON blogs FOR UPDATE USING (auth
 CREATE POLICY "Users can delete their own blogs" ON blogs FOR DELETE USING (auth.uid() = user_id);
 ```
 
+4. Add image support to blogs and create comments table (run in SQL Editor):
+
+```sql
+-- Add image column to blogs
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS image_url TEXT;
+
+-- Comments table
+CREATE TABLE IF NOT EXISTS comments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  blog_id UUID REFERENCES blogs(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users(id) NOT NULL,
+  content TEXT NOT NULL,
+  image_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can read comments" ON comments FOR SELECT USING (true);
+CREATE POLICY "Authenticated users can insert comments" ON comments FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own comments" ON comments FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own comments" ON comments FOR DELETE USING (auth.uid() = user_id);
+```
+
+5. Create a Storage bucket for images (in Supabase Dashboard → Storage):
+
+- Create a bucket named **`uploads`**
+- Set it to **Public** (so post and comment images can be displayed)
+- In Storage → Policies, add a policy to allow authenticated uploads, e.g.:
+  - **Policy name**: "Allow authenticated uploads"
+  - **Allowed operation**: INSERT (and optionally UPDATE, DELETE)
+  - **Target**: All objects in bucket `uploads`
+  - **WITH CHECK**: `auth.role() = 'authenticated'`
+- Add a policy for public read: **SELECT** for all users (or rely on public bucket read)
+
 ### 3. Configure Environment Variables
 
 1. Copy `.env.example` to `.env`
@@ -92,10 +130,13 @@ src/
 │   ├── store.ts
 │   └── slices/
 │       ├── authSlice.ts
-│       └── blogSlice.ts
+│       ├── blogSlice.ts
+│       └── commentSlice.ts
 ├── services/        # API service functions
 │   ├── authService.ts
-│   └── blogService.ts
+│   ├── blogService.ts
+│   ├── commentService.ts
+│   └── storageService.ts
 ├── lib/             # External library configurations
 │   └── supabase.ts
 ├── types/           # TypeScript type definitions
@@ -112,11 +153,16 @@ src/
 - Protected routes for blog creation and editing
 
 ### Blog Operations
-- **Create**: Authenticated users can create new blogs
-- **Read**: All users can view blogs
-- **Update**: Only blog owners can update their blogs
+- **Create**: Authenticated users can create new blogs (optional image)
+- **Read**: All users can view blogs; clicking a card opens the full view page
+- **Update**: Only blog owners can update their blogs (add/remove image)
 - **Delete**: Only blog owners can delete their blogs
-- **List**: Blogs are displayed with pagination (10 per page)
+- **List**: Blogs are displayed with pagination (10 per page); cards show a thumbnail when the post has an image
+
+### Comments
+- **View**: All users can see comments on the blog view page
+- **Add**: Logged-in users can post comments with optional image
+- Comments are loaded with the blog and stored in Redux (comment slice)
 
 ### State Management
 - Redux Toolkit is used for centralized state management
